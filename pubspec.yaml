@@ -1,7 +1,7 @@
 name: ussd
 description: for ussd
 version: 0.0.1
-homepage:
+homepage: https://github.com/wanoghoco/ussd
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
