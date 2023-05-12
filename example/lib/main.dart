@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:ussd/ussd.dart';
+import 'package:ussd_serv/ussd.dart';
 
 void main() {
   runApp(const MyApp());
