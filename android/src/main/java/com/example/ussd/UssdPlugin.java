@@ -43,6 +43,9 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (call.method.equals("make_purchase")) {
      String shortCode= call.argument("short_code");
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        checkAppPermission();
+      }
       if(telephonyManager==null){
         result.success("permission not accepted");
         HashMap<String, Object> hashMap = new HashMap<>();
@@ -100,13 +103,16 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
 
   @Override
   public boolean onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    if(requestCode==011&&grantResults.length>0){
+    if(requestCode==1111&&grantResults.length>0){
       for(int x=0; x<grantResults.length; x++){
         if(grantResults[x]!=PackageManager.PERMISSION_GRANTED){
-          Toast.makeText(context,"Permission Not Yet Granted.",Toast.LENGTH_LONG).show();
+          //Toast.makeText(context,"Permission Not Yet Granted.",Toast.LENGTH_LONG).show();
           return false;
         }
       }
+    }
+    if(requestCode==1111&&grantResults.length==0){
+      return false;
     }
     init();
     return true;
@@ -145,7 +151,7 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
     int per1=binding.getActivity().checkSelfPermission(Manifest.permission.CALL_PHONE);
     int per2=binding.getActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
     if(per1!= PackageManager.PERMISSION_GRANTED||per2!=PackageManager.PERMISSION_GRANTED){
-      binding.getActivity().requestPermissions(new String[]{Manifest.permission.CALL_PHONE,Manifest.permission.READ_PHONE_STATE},011);
+      binding.getActivity().requestPermissions(new String[]{Manifest.permission.CALL_PHONE,Manifest.permission.READ_PHONE_STATE},1111);
       return;
     }
     init();

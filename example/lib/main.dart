@@ -19,8 +19,7 @@ class _MyAppState extends State<MyApp> {
   late Ussd _ussdPlugin;
 
   Future<void> initiatePurchase() async {
-    qriosRespnose = await _ussdPlugin.makePurchase("*556#") ?? "";
-    setState(() {});
+    await _ussdPlugin.makePurchase("*556#") ?? "";
   }
 
   @override
