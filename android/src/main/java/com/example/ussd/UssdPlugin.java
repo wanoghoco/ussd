@@ -83,7 +83,6 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
   @RequiresApi(api = Build.VERSION_CODES.O)
   private void makePurchase(String shortCode){
     String networkOperatorName = telephonyManager.getNetworkOperatorName();
-    System.out.println(networkOperatorName);
     telephonyManager.sendUssdRequest(shortCode, new TelephonyManager.UssdResponseCallback() {
       @Override
       public void onReceiveUssdResponse(TelephonyManager telephonyManager, String request, CharSequence response) {
@@ -94,7 +93,7 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
 
       @Override
       public void onReceiveUssdResponseFailed(TelephonyManager telephonyManager, String request, int failureCode) {
-        System.out.println(request);       HashMap<String, Object> hashMap = new HashMap<>();
+         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("data",  "transaction failed....");
         channel.invokeMethod("failed",hashMap);
       }
@@ -114,7 +113,9 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
     if(requestCode==1111&&grantResults.length==0){
       return false;
     }
-    init();
+   if(requestCode==1111){
+     init();
+   }
     return true;
   }
 
