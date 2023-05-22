@@ -11,7 +11,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -70,6 +73,34 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
     }
   }
 
+
+
+  public String cleaner(CharSequence data){
+    String response=data.toString();
+    List<String> value= Arrays.asList(response.split(""));
+    for(int x=0; x<value.size(); x++){
+     if(value.get(x).equals("Ä")){
+       value.set(x,"[");
+       continue;
+     }
+     if(value.get(x).equals("Ň")){
+       value.set(x,"]");
+       continue;
+     }
+      if(value.get(x).equals("ä")){
+        value.set(x,"{");
+        continue;
+      }
+      if(value.get(x).equals("ñ")){
+        value.set(x,"}");
+        continue;
+      }
+
+    }
+    String dataValue=String.join("",value);
+    return dataValue;
+  }
+
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     channel.setMethodCallHandler(null);
@@ -87,7 +118,7 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
       @Override
       public void onReceiveUssdResponse(TelephonyManager telephonyManager, String request, CharSequence response) {
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("data",  response);
+        hashMap.put("data",  cleaner(response));
        channel.invokeMethod("success",hashMap);
       }
 

@@ -1,48 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:ussd_example/global.dart';
-import 'package:ussd_example/test.dart';
-import 'dart:async';
 
-void main() {
-  runApp(const App());
-}
-
-class App extends StatefulWidget {
-  const App({super.key});
+class Test extends StatefulWidget {
+  const Test({super.key});
 
   @override
-  State<App> createState() => _AppState();
+  State<Test> createState() => _TestState();
 }
 
-class _AppState extends State<App> {
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyApp(),
-    );
-  }
-}
-
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class _TestState extends State<Test> {
   String qriosRespnose = "";
 
   Future<void> initiatePurchase1() async {
-    await globalUssdServices.makePurchase(
-            "*425*0320*57552554245942*711972439052*70175954323*100*1*7*1#") ??
-        "";
+    await globalUssdServices.makePurchase("*123#") ?? "";
   }
 
   Future<void> initiatePurchase2() async {
-    await globalUssdServices.makePurchase(
-            "*425*0138*57552554245942*711972439052*70175954323*100000000000000000*1*7*1#") ??
-        "";
+    await globalUssdServices.makePurchase("*123#") ?? "";
   }
 
   @override
@@ -105,12 +79,6 @@ class _MyAppState extends State<MyApp> {
               const SizedBox(
                 height: 24,
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const Test()));
-                  },
-                  child: const Text("Start Purchase 2"))
             ],
           ),
         ));
