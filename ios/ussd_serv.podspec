@@ -3,7 +3,7 @@
 # Run `pod lib lint ussd.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'ussd'
+  s.name             = 'ussd_serv'
   s.version          = '0.0.1'
   s.summary          = 'for ussd'
   s.description      = <<-DESC

@@ -1,6 +1,6 @@
 name: ussd_serv
 description: for ussd
-version: 0.0.7
+version: 0.0.8
 homepage: https://github.com/wanoghoco/ussd
 
 environment:
