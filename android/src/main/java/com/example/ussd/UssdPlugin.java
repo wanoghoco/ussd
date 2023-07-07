@@ -3,8 +3,12 @@ package com.example.ussd;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
@@ -37,7 +41,6 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "sendcheap_ussd");
-
     channel.setMethodCallHandler(this);
   }
 
@@ -113,7 +116,18 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
 
   @RequiresApi(api = Build.VERSION_CODES.O)
   private void makePurchase(String shortCode){
-    String networkOperatorName = telephonyManager.getNetworkOperatorName();
+      if(!containSim()){
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("data",  "your network type is not supported...");
+        channel.invokeMethod("failed",hashMap);
+        return;
+        }
+       if(isAirplaneModeOn(context)){
+         HashMap<String, Object> hashMap = new HashMap<>();
+         hashMap.put("data",  "network not detected... please try again...");
+         channel.invokeMethod("failed",hashMap);
+         return;
+       }
     telephonyManager.sendUssdRequest(shortCode, new TelephonyManager.UssdResponseCallback() {
       @Override
       public void onReceiveUssdResponse(TelephonyManager telephonyManager, String request, CharSequence response) {
@@ -129,6 +143,15 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
         channel.invokeMethod("failed",hashMap);
       }
     },handler);
+  }
+
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public boolean containSim(){
+    SubscriptionManager subscriptionManager = SubscriptionManager.from(binding.getActivity());
+    List<SubscriptionInfo> subscriptionInfoList = subscriptionManager.getActiveSubscriptionInfoList();
+    if(subscriptionInfoList.size()<=0) return false;
+    return true;
   }
 
   @Override
@@ -178,12 +201,23 @@ public class UssdPlugin implements FlutterPlugin, MethodCallHandler, ActivityAwa
 
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+  public static boolean isAirplaneModeOn(Context context) {
+    ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    if (connectivityManager != null) {
+      int airplaneMode = Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0);
+      return airplaneMode != 0;
+    }
+    return false;
+  }
+
   @RequiresApi(api = Build.VERSION_CODES.M)
   void checkAppPermission(){
     int per1=binding.getActivity().checkSelfPermission(Manifest.permission.CALL_PHONE);
     int per2=binding.getActivity().checkSelfPermission(Manifest.permission.READ_PHONE_STATE);
+    int per3=binding.getActivity().checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE);
     if(per1!= PackageManager.PERMISSION_GRANTED||per2!=PackageManager.PERMISSION_GRANTED){
-      binding.getActivity().requestPermissions(new String[]{Manifest.permission.CALL_PHONE,Manifest.permission.READ_PHONE_STATE},1111);
+      binding.getActivity().requestPermissions(new String[]{Manifest.permission.CALL_PHONE,Manifest.permission.READ_PHONE_STATE,Manifest.permission.ACCESS_NETWORK_STATE},1111);
       return;
     }
     init();
